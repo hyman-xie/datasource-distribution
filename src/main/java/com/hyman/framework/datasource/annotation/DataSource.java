@@ -10,5 +10,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Inherited
 public @interface DataSource {
-	String value();
+	String field() default "";
+	
+	String name() default "";
 }

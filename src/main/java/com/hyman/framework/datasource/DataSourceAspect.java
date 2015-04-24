@@ -32,21 +32,28 @@ public class DataSourceAspect {
 					Annotation annotation = pas[j];
 					if (annotation instanceof DataSource) {
 						DataSource data = (DataSource) annotation;
-						if(data.value()==null || data.value().trim().length()==0){
+						if(data.name()!=null && data.name().trim().length()>0){
+							log.info("=================find annotation datasource with datasource name:"+data.name());
+							DynamicDataSourceHolder.putDataSource(data.name());
+							putDataSource=true;
 							return;
 						}
-						log.info("=================find annotation datasource with name:"+data.value()+" value:"+parameterValues[i]);
-						String datasourceKey = dataSourceKeyDeterminer.determine(data.value(), (Long) parameterValues[i]);
-						DynamicDataSourceHolder.putDataSource(datasourceKey);
-						putDataSource=true;
-						return;
+						if(data.field()==null || data.field().trim().length()==0){
+							return;
+						}else{							
+							log.info("=================find annotation datasource with field:"+data.field()+" value:"+parameterValues[i]);
+							String datasourceKey = dataSourceKeyDeterminer.determine(data.field(), (Long) parameterValues[i]);
+							DynamicDataSourceHolder.putDataSource(datasourceKey);
+							putDataSource=true;
+							return;
+						}
 					}
 				}
 			}
 		} catch (Exception e) {
 			log.error("error in datasource aspect",e);
 		} finally{
-			if(!putDataSource){
+			if(!putDataSource){	
 				DynamicDataSourceHolder.putDataSource(dataSourceKeyDeterminer.getDefaultDataSourceKey());
 			}
 			if(DynamicDataSourceHolder.getOriginalDataSource()==null){
