@@ -2,21 +2,13 @@ package com.hyman.framework.datasource.impl.rules;
 
 import com.hyman.framework.datasource.DataSourceKeyRule;
 
-public class DataSourceKeyHashRule implements DataSourceKeyRule {
-
-	private String field;
+public class DataSourceKeyHashRule extends ADataSourceKeyRule implements DataSourceKeyRule {
+	
 	private Long from;
 	private Long to;
-	private String dataSourceKey;
-
+	
 	public DataSourceKeyHashRule() {
 		super();
-	}
-	public String getField() {
-		return field;
-	}
-	public void setField(String field) {
-		this.field = field;
 	}
 	public Long getFrom() {
 		return from;
@@ -30,17 +22,21 @@ public class DataSourceKeyHashRule implements DataSourceKeyRule {
 	public void setTo(Long to) {
 		this.to = to;
 	}
-	public String getDataSourceKey() {
-		return dataSourceKey;
-	}
-	public void setDataSourceKey(String dataSourceKey) {
-		this.dataSourceKey = dataSourceKey;
-	}
 	public boolean applyRule(String field, Long value) {
+		return applyRule(field, value, false);
+	}
+	@Override
+	public boolean applyRule(String field, Long value, boolean readonly) {
 		if(field==null || value==null){
 			return false;
 		}
-		if(field.compareTo(this.field)!=0){
+		if(field.compareTo(getField())!=0){
+			return false;
+		}
+		if(!isReadonly() && readonly){
+			return false;
+		}
+		if(isReadonly() && !readonly){
 			return false;
 		}
 		if(from==null && to!=null && value.longValue()<to.longValue()){

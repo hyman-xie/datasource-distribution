@@ -7,10 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PARAMETER)
+@Target({ElementType.PARAMETER,ElementType.METHOD})
 @Inherited
 public @interface DataSource {
 	String field() default "";
 	
 	String name() default "";
+	
+	boolean readonly() default false;
 }

@@ -10,15 +10,15 @@ import com.hyman.framework.datasource.DataSourceKeyDeterminer;
 import com.hyman.framework.datasource.DataSourceKeyRule;
 
 public class DefaultDataSourceKeyDeterminer implements DataSourceKeyDeterminer {
-
+	
 	private Logger log=LoggerFactory.getLogger(DefaultDataSourceKeyDeterminer.class);
-
+	
 	private String defaultDataSourceKey;
 	private List<DataSourceKeyRule> rules=new ArrayList<DataSourceKeyRule>();
-
-	public String determine(String field, Long value) {
+	
+	public String determine(String field, Long value, boolean readonly) {
 		for(DataSourceKeyRule dataSourceKeyRule : rules){
-			if(dataSourceKeyRule.applyRule(field, value)){
+			if(dataSourceKeyRule.applyRule(field, value, readonly)){
 				log.info("============determine to use datasource: field-"+field+"/value-"+value+"/datasource-"+dataSourceKeyRule.getDataSourceKey());
 				return dataSourceKeyRule.getDataSourceKey();
 			}
@@ -26,6 +26,11 @@ public class DefaultDataSourceKeyDeterminer implements DataSourceKeyDeterminer {
 		return getDefaultDataSourceKey();
 	}
 
+	@Override
+	public String determine(String field, Integer value, boolean readonly) {
+		return determine(field, new Long(value),readonly);
+	}
+	
 	public String getDefaultDataSourceKey() {
 		return defaultDataSourceKey;
 	}
@@ -41,5 +46,4 @@ public class DefaultDataSourceKeyDeterminer implements DataSourceKeyDeterminer {
 	public void setRules(List<DataSourceKeyRule> rules) {
 		this.rules = rules;
 	}
-
 }
